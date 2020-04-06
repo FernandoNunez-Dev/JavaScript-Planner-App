@@ -18,6 +18,10 @@ SO THAT I can manage my time effectively
 ```
 
 ## Software Utilized
-```
-JavaScript, Bootstrap, Bootswatch Yeti, HTML, CSS
-```
+
+* JavaScript
+* Bootstrap
+* Bootswatch Yeti
+* HTML
+* CSS
+
