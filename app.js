@@ -8,14 +8,11 @@ class Event {
     }
 }
 
-
-
  // UI Class: Handles UI Tasks
 class UI {
   static displayEvents() {
       const events = Store.getEvents();
       
-
       events.forEach((event) => UI.addEventToList(event));
   }
 
@@ -46,151 +43,110 @@ class UI {
  
   // Method to add div and add error or success alerts 
   static showAlert(message, className) {
-      const div = document.createElement('div');
-      div.className = `alert alert-${className}`;
-      div.appendChild(document.createTextNode(message));
-      const container = document.querySelector('.container');
-      const form = document.querySelector('#schedule-form');
-      container.insertBefore(div, form);
+    const div = document.createElement('div');
+    div.className = `alert alert-${className}`;
+    div.appendChild(document.createTextNode(message));
+    const container = document.querySelector('.container');
+    const form = document.querySelector('#schedule-form');
+    container.insertBefore(div, form);
   
   
   
       // Adding setTimeOut to remove alert div error from dom after 3 seconds
-  setTimeout(() => document.querySelector('.alert').remove(), 3000);
+    setTimeout(() => document.querySelector('.alert').remove(), 3000);
   }
  
  
  
   // Method to clear fields after added event
   static clearField() {
-      document.querySelector('#time').value = '';
-      document.querySelector('#event').value = '';
-      document.querySelector('#details').value = '';
+    document.querySelector('#time').value = '';
+    document.querySelector('#event').value = '';
+    document.querySelector('#details').value = '';
   }
 } 
 
 
 
   // LocalStorage Class: Stringify data and format into array of objects with JSON.parse JSON.stringify
- class Store {
-   static getEvents() {
-      let events;
-      if(localStorage.getItem('events') === null) {
-          events = [];
-      } else {
+class Store {
+  static getEvents() {
+    let events;
+    if(localStorage.getItem('event') === null) {
+      events = [];
+    } else {
         
-        events = JSON.parse(localStorage.getItem('events'));
+      events = JSON.parse(localStorage.getItem('event'));
+    }
+
+    return events;
+  }   
+
+  static addEvent(event) {
+    const events = Store.getEvents();
+    events.push(event);
+    localStorage.setItem('events', JSON.stringify(event));
+
+  }
+
+  static removeEvent(details) {
+    const events = Store.getEvents();
+    
+    events.forEach((event, index) => {
+      if(event.details === details) {
+        events.splice(index, 1);
       }
+    });
 
-      return events;
-   }   
-
-
-   static addEvent(event) {
-       const events = Store.getEvents();
-
-       events.push(event);
-       localStorage.setItem('events', JSON.stringify(events));
-
-   }
-
-   static removeEvent(details) {
-       const events = Store.getEvents();
-
-       events.forEach((event, index) => {
-           
-           if(event.details === details) {
-               events.splice(index, 1);
-           }
-         });
-
-       localStorage.setItem('events', JSON.stringify(events));
-   }
+    localStorage.setItem('events', JSON.stringify(event));
+  }
 }  
-
 
 
  // Event: Display Events
 document.addEventListener('DOMContentLoaded', UI.displayEvents);
 
-
-
- 
  // Event: Add an event
 document.querySelector('#schedule-form').addEventListener('submit', (e) => {
 
- 
- 
- 
  //Prevent actual submit
   e.preventDefault();
 
-
-
- 
- 
-  // Get form values by id
+ // Get form values by id
   const time = document.querySelector('#time').value;
-  const event = document.querySelector('#event').value;
+  event = document.querySelector('#event').value;
   const details = document.querySelector('#details').value; 
 
-
-
- 
- 
-  // If statement to validate that start time and event input fields are populated
- if(time === '' || event === '') {
+ // If statement to validate that start time and event input fields are populated
+  if(time === '' || event === '' || details === '') {
     UI.showAlert('Please fill in all fields', 'danger');
- } else {
-   
- 
- 
-    // Instance of the event class to Instantiate event 
-   const events = new Event(time, event, details);
+  } else {
+ // Instance of the event class to Instantiate event 
+    event = new Event(time, event, details);
 
- 
- 
- 
-   // Add Event to UI
-   UI.addEventToList(event);
+ // Add Event to UI
+    UI.addEventToList(event);
 
+ // Add event to Store
+    Store.addEvent(event);
 
-
-
-   // Add event to Store
-   Store.addEvent(event);
-
-
- 
- 
-   // Show success alert after input fields are populated  
-   UI.showAlert('Event Added', 'success');
-
-
-
+ // Show success alert after input fields are populated  
+    UI.showAlert('Event Added', 'success');
 
  // Calling the clear fields method
-   UI.clearFields();
+    UI.clearFields();
   }
 });
-
-
-
-
 
 
  // Event: Remove an event
 document.querySelector('#event-list').addEventListener('click', (e) => {
     
-    
-// Remove event from UI
+ // Remove event from UI
   UI.deleteEvent(e.target);
-
-
 
  //Remove event from storage
   Store.removeEvent(e.target.parentElement.previousElementSibling.textContent);
-
 
   UI.showAlert('Event Removed', 'success');
 });
